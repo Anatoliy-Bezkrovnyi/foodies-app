@@ -50,8 +50,6 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
         email: values.email.trim(),
         password: values.password,
       });
-
-      // Автоматична авторизація після реєстрації
       dispatch(
         setCredentials({
           user: data.user,
@@ -132,7 +130,6 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    /* Відкрите око — пароль видимий */
                     <svg
                       width="20"
                       height="20"
@@ -147,7 +144,6 @@ export default function SignUpForm({ onSuccess }: SignUpFormProps) {
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                   ) : (
-                    /* Закреслене око — пароль прихований */
                     <svg
                       width="20"
                       height="20"
