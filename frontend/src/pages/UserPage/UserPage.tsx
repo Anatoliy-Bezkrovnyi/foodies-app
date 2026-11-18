@@ -21,6 +21,10 @@ const TABS: { id: ProfileTab; label: string }[] = [
 ];
 const PAGE_SIZE = 6;
 const isRecipeTab = (tab: ProfileTab): tab is 'recipes' | 'favorites' => tab === 'recipes' || tab === 'favorites';
+const isRecipe = (item: ProfileRecipe | ProfileUserCard): item is ProfileRecipe =>
+  typeof (item as ProfileRecipe).title === 'string';
+const isPerson = (item: ProfileRecipe | ProfileUserCard): item is ProfileUserCard =>
+  typeof (item as ProfileUserCard).name === 'string';
 
 export default function UserPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +32,7 @@ export default function UserPage() {
   const isAuthenticated = useAppSelector(state => state.auth.isAuth);
   const dispatch = useAppDispatch();
   const demo = isDemoUser(id);
-  const own = Boolean(id && authUser?.id === id);
+  const own = Boolean(id && (authUser?.id === id || (demo && id === 'demo-self')));
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
@@ -43,6 +47,7 @@ export default function UserPage() {
   const [following, setFollowing] = useState(false);
   const [followOverrides, setFollowOverrides] = useState<Record<string, boolean>>({});
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [deletedRecipeIds, setDeletedRecipeIds] = useState<string[]>([]);
   const avatarUrl = useRef<string | null>(null);
 
   useEffect(() => () => { if (avatarUrl.current) URL.revokeObjectURL(avatarUrl.current); }, []);
@@ -54,6 +59,7 @@ export default function UserPage() {
     setAvatarPreview(null);
     setFollowing(false);
     setFollowOverrides({});
+    setDeletedRecipeIds([]);
     setTab('recipes');
     setPage(1);
     setProfileLoading(true);
@@ -63,7 +69,7 @@ export default function UserPage() {
       return () => controller.abort();
     }
     if (demo) {
-      setProfile(demoProfile); setFollowing(demoProfile.isFollowing); setProfileLoading(false);
+      setProfile({ ...demoProfile, id: id === 'demo-self' ? 'demo-self' : demoProfile.id }); setFollowing(demoProfile.isFollowing); setProfileLoading(false);
       return () => controller.abort();
     }
     getProfile(id, controller.signal)
@@ -77,20 +83,21 @@ export default function UserPage() {
     if (!id) return;
     const controller = new AbortController();
     setItems([]); setTabLoading(true); setTabError(null);
-    const request = demo ? Promise.resolve(demoTab(tab, page, PAGE_SIZE)) : getProfileTab(id, tab, page, PAGE_SIZE, controller.signal);
+    const request = demo ? Promise.resolve(demoTab(tab, page, PAGE_SIZE, deletedRecipeIds)) : getProfileTab(id, tab, page, PAGE_SIZE, controller.signal);
     request.then(data => {
       if (!controller.signal.aborted) { setItems(data.items); setTotalPages(Math.max(1, data.totalPages)); }
     }).catch(() => { if (!controller.signal.aborted) setTabError('Unable to load this section.'); })
       .finally(() => { if (!controller.signal.aborted) setTabLoading(false); });
     return () => controller.abort();
-  }, [id, demo, tab, page]);
+  }, [id, demo, tab, page, deletedRecipeIds]);
 
   const changeTab = (next: ProfileTab) => {
     if (tab === next) return;
+    setItems([]); setTabLoading(true); setTabError(null);
     setTab(next); setPage(1); setActionError(null);
   };
   const followProfile = async () => {
-    if (!profile || busy || !isAuthenticated || own) return;
+    if (!profile || busy || (!isAuthenticated && !demo) || own) return;
     const next = !following;
     setActionError(null); setFollowing(next); setBusy('profile-follow');
     try { if (!demo) await setFollow(profile.id, next); }
@@ -98,8 +105,8 @@ export default function UserPage() {
     finally { setBusy(null); }
   };
   const followPerson = async (userId: string) => {
-    if (busy || !isAuthenticated || userId === authUser?.id) return;
-    const person = items.find(item => 'name' in item && item.id === userId) as ProfileUserCard | undefined;
+    if (busy || (!isAuthenticated && !demo) || userId === authUser?.id) return;
+    const person = items.find(item => isPerson(item) && item.id === userId) as ProfileUserCard | undefined;
     if (!person) return;
     const previous = followOverrides[userId] ?? person.isFollowing;
     const next = !previous;
@@ -115,7 +122,8 @@ export default function UserPage() {
     if (!own || busy || tab !== 'recipes' || !window.confirm('Delete this recipe?')) return;
     setActionError(null); setBusy(recipeId);
     try {
-      await deleteOwnRecipe(recipeId);
+      if (!demo) await deleteOwnRecipe(recipeId);
+      if (demo) setDeletedRecipeIds(current => current.includes(recipeId) ? current : [...current, recipeId]);
       setItems(current => current.filter(item => item.id !== recipeId));
       setProfile(current => current && ({ ...current, recipesCount: Math.max(0, current.recipesCount - 1) }));
     } catch { setActionError('Unable to delete this recipe.'); }
@@ -131,10 +139,10 @@ export default function UserPage() {
     if (avatarUrl.current) URL.revokeObjectURL(avatarUrl.current);
     avatarUrl.current = nextUrl; setAvatarPreview(nextUrl);
     try {
-      const storedUrl = await uploadAvatar(file);
+      const storedUrl = demo ? nextUrl : await uploadAvatar(file);
       setProfile(current => current ? { ...current, avatar: storedUrl } : current);
-      if (authUser) dispatch(setUser({ ...authUser, avatar: storedUrl }));
-      setAvatarPreview(null);
+      if (!demo && authUser) dispatch(setUser({ ...authUser, avatar: storedUrl }));
+      if (!demo) setAvatarPreview(null);
     } catch { setAvatarPreview(null); setActionError('Avatar upload failed. Please try again.'); }
     finally { setBusy(null); }
   };
@@ -160,10 +168,10 @@ export default function UserPage() {
               <p role="alert" className={styles.error}>{tabError}</p> : items.length === 0 ?
               <div className={styles.empty}>Nothing here yet.</div> : isRecipeTab(tab) ?
               <div className={styles.recipesGrid}>
-                {(items as ProfileRecipe[]).map(recipe => <RecipePreview key={recipe.id} recipe={recipe}
+                {items.filter(isRecipe).map(recipe => <RecipePreview key={recipe.id} recipe={recipe}
                   canRemove={own && tab === 'recipes'} busy={busy === recipe.id} isDemo={demo} onRemove={removeRecipe} />)}
               </div> : <div className={styles.peopleGrid}>
-                {(items as ProfileUserCard[]).map(user => <UserCard key={user.id} user={user}
+                {items.filter(isPerson).map(user => <UserCard key={user.id} user={user}
                   isFollowing={followOverrides[user.id] ?? user.isFollowing} isAuthenticated={isAuthenticated || demo}
                   busy={busy === user.id} onFollow={followPerson} isDemo={demo} />)}
               </div>}
