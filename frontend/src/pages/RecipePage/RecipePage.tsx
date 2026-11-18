@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios';
 import { Link, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../redux/hooks';
 import { getPopularRecipes, getRecipe, updateFavorite, type RecipeDetails } from '../../services/recipeDetailsApi';
-import PathInfo from '../../components/RecipePage/PathInfo';
+import { PathInfo, Loader } from '../../components/Common';
 import RecipeMainInfo from '../../components/RecipePage/RecipeMainInfo';
 import RecipeIngredients from '../../components/RecipePage/RecipeIngredients';
 import RecipePreparation from '../../components/RecipePage/RecipePreparation';
@@ -91,10 +91,10 @@ export default function RecipePage() {
 
   return <main className="recipe-page">
     <div className="recipe-container">
-      {loading ? <p role="status" className="recipe-page-message">Loading recipe…</p> : error || !recipe ? (
+      {loading ? <div className="recipe-page-message"><Loader label="Loading recipe" /></div> : error || !recipe ? (
         <div className="recipe-page-message" role="alert"><h1>Recipe unavailable</h1><p>{error ?? 'Recipe not found.'}</p><Link to="/">Go home</Link></div>
       ) : <>
-        <PathInfo title={recipe.title} />
+        <PathInfo className="recipe-path-info" items={[{ label: 'Home', to: '/' }, { label: recipe.title }]} />
         <div className="recipe-content-grid">
           <RecipeMainInfo recipe={recipe}>
             <RecipeIngredients ingredients={recipe.ingredients} />
