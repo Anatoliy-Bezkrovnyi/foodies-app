@@ -14,6 +14,8 @@ import storage from 'redux-persist/lib/storage';
 import { setApiTokenProvider } from '../services/api';
 import authReducer, { type AuthState } from './auth/authSlice';
 import metaReducer from './meta/metaSlice';
+import favoritesReducer from './favorites/favoritesSlice';
+import uiReducer from './ui/uiSlice';
 
 const authPersistConfig: PersistConfig<AuthState> = {
   key: 'auth',
@@ -24,6 +26,8 @@ const authPersistConfig: PersistConfig<AuthState> = {
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   meta: metaReducer,
+  favorites: favoritesReducer,
+  ui: uiReducer,
 });
 
 export const store = configureStore({
