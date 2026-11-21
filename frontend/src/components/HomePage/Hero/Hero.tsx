@@ -1,12 +1,13 @@
+import fe05HeroSmall from '../../../assets/images/fe05/hero-small.png';
+import fe05HeroMain from '../../../assets/images/fe05/hero-main.png';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { openAuthModal } from '../../../redux/ui/uiSlice';
 import css from './Hero.module.css';
 
-// Photographic placeholders until the original Figma photographs are exported.
-// The layout, copy and measurements are taken from the Foodies desktop/tablet/mobile frames.
-const heroMain = 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=85';
-const heroSmall = 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=360&q=85';
+// Original raster assets exported from the Foodies Figma design.
+const heroMain = fe05HeroMain;
+const heroSmall = fe05HeroSmall;
 
 export const Hero = () => {
   const dispatch = useAppDispatch();
