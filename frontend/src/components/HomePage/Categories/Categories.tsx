@@ -29,11 +29,34 @@ export const Categories = () => {
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => { void dispatch(fetchLookups()); }, [dispatch]);
+  // Some API responses wrap the categories array in { data } or { categories }.
+  // Redux state is typed as Category[], but runtime JSON may still have those wrappers.
+  // Normalize before reading .length or calling .map so an unexpected response cannot
+  // crash the entire HomePage (see FE-05 browser regression).
   const cards = useMemo(() => {
-    if (!categories.length) return curated;
-    const available = new Set(categories.map((item) => item.name.toLowerCase()));
+    const extractCategories = (input: unknown): { name: string }[] => {
+      let value: unknown = input;
+      for (let depth = 0; depth < 3; depth += 1) {
+        if (Array.isArray(value)) {
+          return value.filter(
+            (entry): entry is { name: string } =>
+              typeof entry === 'object' && entry !== null &&
+              'name' in entry && typeof entry.name === 'string' && Boolean(entry.name.trim()),
+          );
+        }
+        if (typeof value !== 'object' || value === null) break;
+        const record = value as Record<string, unknown>;
+        value = record.data ?? record.categories ?? record.items ?? record.results;
+      }
+      return [];
+    };
+
+    const apiCategories = extractCategories(categories);
+    if (!apiCategories.length) return curated;
+    const available = new Set(apiCategories.map((item) => item.name.toLowerCase()));
     const main = curated.filter((item) => available.has(item.name.toLowerCase()));
-    const extras = categories.filter((item) => !curated.some((c) => c.name.toLowerCase() === item.name.toLowerCase()))
+    const extras = apiCategories
+      .filter((item) => !curated.some((c) => c.name.toLowerCase() === item.name.toLowerCase()))
       .map((item) => ({ name: item.name, image: 'photo-1543353071-873f17a7a088', wide: false }));
     return [...main, ...extras];
   }, [categories]);
