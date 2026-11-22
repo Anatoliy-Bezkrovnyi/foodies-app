@@ -15,6 +15,17 @@ import {
 
 type MetaThunk = ThunkAction<Promise<void>, RootState, unknown, UnknownAction>;
 
+const unwrapList = <T,>(payload: unknown, key: string): T[] => {
+  let value: unknown = payload;
+  for (let i = 0; i < 3; i += 1) {
+    if (Array.isArray(value)) return value as T[];
+    if (typeof value !== 'object' || value === null) return [];
+    const obj: Record<string, unknown> = value as Record<string, unknown>;
+    value = obj[key] ?? obj.data ?? obj.items ?? obj.results;
+  }
+  return [];
+};
+
 // Loads categories, areas and ingredients once; lists already in the store are not requested again.
 export const fetchLookups = (): MetaThunk => async (dispatch, getState) => {
   const { categories, areas, ingredients, isLoading } = getState().meta;
@@ -28,7 +39,7 @@ export const fetchLookups = (): MetaThunk => async (dispatch, getState) => {
   if (!categories.length) {
     requests.push(
       api.get<Category[]>('/categories').then(({ data }) => {
-        dispatch(setCategories(data));
+        dispatch(setCategories(unwrapList<Category>(data, 'categories')));
       }),
     );
   }
@@ -36,7 +47,7 @@ export const fetchLookups = (): MetaThunk => async (dispatch, getState) => {
   if (!areas.length) {
     requests.push(
       api.get<Area[]>('/areas').then(({ data }) => {
-        dispatch(setAreas(data));
+        dispatch(setAreas(unwrapList<Area>(data, 'areas')));
       }),
     );
   }
@@ -44,7 +55,7 @@ export const fetchLookups = (): MetaThunk => async (dispatch, getState) => {
   if (!ingredients.length) {
     requests.push(
       api.get<Ingredient[]>('/ingredients').then(({ data }) => {
-        dispatch(setIngredients(data));
+        dispatch(setIngredients(unwrapList<Ingredient>(data, 'ingredients')));
       }),
     );
   }
