@@ -6,7 +6,7 @@ interface Props { recipe: ProfileRecipe; canRemove: boolean; busy: boolean; isDe
 export default function RecipePreview({ recipe, canRemove, busy, isDemo, onRemove }: Props) {
   return <article className={styles.recipeCard}>
     <Link to={isDemo ? '/recipe/test' : `/recipe/${recipe.id}`} className={styles.recipeImage} aria-label={`View ${recipe.title}`}>
-      {recipe.thumb ? <img src={recipe.thumb} alt={recipe.title} loading="lazy" /> : <span className={styles.imagePlaceholder}>Recipe image</span>}
+      {recipe.thumb ? <img src={recipe.thumb} alt={recipe.title} loading="lazy" decoding="async" /> : <span className={styles.imagePlaceholder}>Recipe image</span>}
     </Link>
     <div className={styles.cardTitleRow}>
       <h3><Link to={isDemo ? '/recipe/test' : `/recipe/${recipe.id}`}>{recipe.title}</Link></h3>
