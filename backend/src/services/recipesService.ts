@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import createHttpError from 'http-errors';
 import { prisma } from '../db/prisma.js';
 import { uploadImageBuffer } from '../utils/cloudinary.js';
@@ -12,6 +13,12 @@ interface GetRecipesParams {
 }
 
 interface GetOwnRecipesParams {
+  userId: string;
+  page: number;
+  perPage: number;
+}
+
+interface GetFavoriteRecipesParams {
   userId: string;
   page: number;
   perPage: number;
@@ -228,5 +235,89 @@ export const deleteOwnRecipe = async (userId: string, recipeId: string) => {
   return {
     id: recipeId,
     message: 'Recipe successfully deleted',
+  };
+};
+
+// GET /api/recipes/favorite (та /api/recipes/favorites)
+export const getFavoriteRecipes = async ({ userId, page, perPage }: GetFavoriteRecipesParams) => {
+  const where = { userId };
+
+  const [favorites, totalItems] = await prisma.$transaction([
+    prisma.favorite.findMany({
+      where,
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        recipe: {
+          include: recipeDetailsInclude,
+        },
+      },
+    }),
+    prisma.favorite.count({ where }),
+  ]);
+
+  return {
+    recipes: favorites.map((item) => item.recipe),
+    page,
+    perPage,
+    totalItems,
+    totalPages: Math.ceil(totalItems / perPage),
+  };
+};
+
+// POST /api/recipes/:id/favorite
+export const addRecipeToFavorites = async (userId: string, recipeId: string) => {
+  const recipe = await prisma.recipe.findUnique({
+    where: { id: recipeId },
+    select: { id: true },
+  });
+
+  if (!recipe) {
+    throw createHttpError(404, 'Recipe not found');
+  }
+
+  try {
+    const favorite = await prisma.favorite.create({
+      data: {
+        userId,
+        recipeId,
+      },
+      select: {
+        id: true,
+        userId: true,
+        recipeId: true,
+        createdAt: true,
+      },
+    });
+
+    return favorite;
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      throw createHttpError(409, 'Recipe is already in favorites');
+    }
+
+    throw error;
+  }
+};
+
+// DELETE /api/recipes/:id/favorite
+export const removeRecipeFromFavorites = async (userId: string, recipeId: string) => {
+  const result = await prisma.favorite.deleteMany({
+    where: {
+      userId,
+      recipeId,
+    },
+  });
+
+  if (result.count === 0) {
+    throw createHttpError(404, 'Recipe is not in favorites');
+  }
+
+  return {
+    recipeId,
+    message: 'Recipe successfully removed from favorites',
   };
 };
