@@ -6,6 +6,9 @@ import {
   getRecipesController,
   getPopularRecipesController,
   getRecipeByIdController,
+  getFavoriteRecipesController,
+  addFavoriteRecipeController,
+  removeFavoriteRecipeController,
 } from '../controllers/recipesController.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import { uploadRecipeThumb } from '../middlewares/uploadRecipeThumb.js';
@@ -18,6 +21,8 @@ const recipesRouter = Router();
 recipesRouter.get('/', getRecipesController);
 recipesRouter.get('/popular', getPopularRecipesController);
 recipesRouter.get('/own', authenticate, getOwnRecipesController);
+recipesRouter.get('/favorite', authenticate, getFavoriteRecipesController);
+recipesRouter.get('/favorites', authenticate, getFavoriteRecipesController);
 
 recipesRouter.post(
   '/',
@@ -30,5 +35,7 @@ recipesRouter.post(
 
 recipesRouter.get('/:id', getRecipeByIdController);
 recipesRouter.delete('/:id', authenticate, deleteRecipeController);
+recipesRouter.post('/:id/favorite', authenticate, addFavoriteRecipeController);
+recipesRouter.delete('/:id/favorite', authenticate, removeFavoriteRecipeController);
 
 export default recipesRouter;
