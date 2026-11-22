@@ -77,13 +77,19 @@ export const getRecipes = async ({
 };
 
 // GET /api/recipes/popular
-export const getPopularRecipes = () => {
+export const getPopularRecipes = (limit = 4) => {
   return prisma.recipe.findMany({
-    orderBy: {
-      favorites: {
-        _count: 'desc',
+    take: limit,
+    orderBy: [
+      {
+        favorites: {
+          _count: 'desc',
+        },
       },
-    },
+      {
+        createdAt: 'desc',
+      },
+    ],
     include: {
       owner: {
         select: {
