@@ -26,7 +26,7 @@ export default function ProfileHeader({ user, isOwn, isAuthenticated, isFollowin
     <section className={styles.profileHeader} aria-label="User information">
       <div className={styles.avatarWrap}>
         {avatarPreview || user.avatar
-          ? <img className={styles.avatar} src={avatarPreview || user.avatar || ''} alt={`${user.name} avatar`} />
+          ? <img className={styles.avatar} src={avatarPreview || user.avatar || ''} alt={`${user.name} avatar`} decoding="async" />
           : <span className={styles.avatarFallback} aria-label={`${user.name} avatar`}>{abbreviate(user.name)}</span>}
         {isOwn && <label className={styles.avatarUpload} title="Change avatar">
           <span aria-hidden="true">✎</span><span className="visually-hidden">Choose a profile picture</span>

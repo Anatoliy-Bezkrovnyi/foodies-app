@@ -26,7 +26,7 @@ export const RecipeCard = ({
     <article className={css.card}>
       <Link to={recipePath} className={css.imageLink} tabIndex={-1} aria-hidden="true">
         {thumb ? (
-          <img className={css.image} src={thumb} alt="" loading="lazy" />
+          <img className={css.image} src={thumb} alt="" loading="lazy" decoding="async" />
         ) : (
           <span className={css.imagePlaceholder} />
         )}
@@ -49,7 +49,7 @@ export const RecipeCard = ({
               aria-label={`Open ${owner.name || 'author'} profile`}
             >
               <span className={css.avatar}>
-                {owner.avatar && <img src={owner.avatar} alt="" loading="lazy" />}
+                {owner.avatar && <img src={owner.avatar} alt="" loading="lazy" decoding="async" />}
               </span>
               <span className={css.authorName}>{owner.name}</span>
             </button>

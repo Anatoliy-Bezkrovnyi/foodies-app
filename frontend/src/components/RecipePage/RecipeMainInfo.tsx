@@ -7,7 +7,7 @@ export default function RecipeMainInfo({ recipe, children }: Props) {
   return (
     <section className="recipe-info" aria-labelledby="recipe-title">
       <div className="recipe-hero-media">
-        {recipe.thumb ? <img src={recipe.thumb} alt={recipe.title} loading="eager" /> :
+        {recipe.thumb ? <img src={recipe.thumb} alt={recipe.title} loading="eager" decoding="async" /> :
           <div className="recipe-image-missing" role="img" aria-label="Recipe image unavailable">No image</div>}
       </div>
       <div className="recipe-hero-copy">
