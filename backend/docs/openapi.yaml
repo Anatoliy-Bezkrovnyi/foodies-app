@@ -1,4 +1,4 @@
-openapi: 3.1.0
+﻿openapi: 3.1.0
 
 info:
   title: Foodies API
@@ -149,10 +149,11 @@ paths:
     get:
       tags:
         - Users
-      summary: Get public user profile
-      description: Returns a public user profile with recipes and followers count.
+      summary: Get user profile by ID
+      description: Returns an authenticated user's profile with email, avatar, recipe and follower counts, and following status.
       operationId: getUserById
-      security: []
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
@@ -168,11 +169,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PublicUserProfile'
+        '401':
+          description: Unauthorized
         '404':
           description: User not found
         '500':
           description: Internal Server Error
-
   /users/current:
     get:
       tags:
@@ -256,38 +258,18 @@ components:
           format: uuid
         name:
           type: string
+        email:
+          type: string
+          format: email
         avatar:
           type: string
           nullable: true
-        createdAt:
-          type: string
-          format: date-time
-        recipes:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-              title:
-                type: string
-              description:
-                type: string
-              thumb:
-                type: string
-                nullable: true
-              time:
-                type: string
-              createdAt:
-                type: string
-                format: date-time
-        _count:
-          type: object
-          properties:
-            followers:
-              type: integer
-
+        recipesCount:
+          type: integer
+        followersCount:
+          type: integer
+        isFollowing:
+          type: boolean
     CurrentUserProfile:
       type: object
       properties:

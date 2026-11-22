@@ -21,7 +21,7 @@ usersRouter.patch('/avatar', authenticate, uploadAvatar, updateAvatar);
 usersRouter.post('/:id/follow', authenticate, followUserController);
 usersRouter.delete('/:id/follow', authenticate, unfollowUserController);
 
-// Public route
-usersRouter.get('/:id', getUserById);
+// Privat route
+usersRouter.get('/:id', authenticate, getUserById);
 
 export default usersRouter;

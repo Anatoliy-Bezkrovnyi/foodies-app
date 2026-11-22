@@ -4,35 +4,42 @@ import { Prisma } from '@prisma/client';
 import cloudinary from '../utils/cloudinary.js';
 
 // GET /api/users/:id
-// Returns a public user profile with recipes and followers count.
-export const getPublicUserProfile = (userId: string) => {
-  return prisma.user.findUnique({
+// Returns another user's profile with recipe and follower counts.
+export const getPublicUserProfile = async (
+  userId: string,
+  currentUserId: string,
+) => {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       name: true,
+      email: true,
       avatar: true,
-      createdAt: true,
-      recipes: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          thumb: true,
-          time: true,
-          createdAt: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      },
       _count: {
         select: {
+          recipes: true,
           followers: true,
         },
       },
+      followers: {
+        where: { followerId: currentUserId },
+        select: { id: true },
+      },
     },
   });
+
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    recipesCount: user._count.recipes,
+    followersCount: user._count.followers,
+    isFollowing: user.followers.length > 0,
+  };
 };
 // GET /api/users/current
 // Returns the current user's profile with activity counters.
