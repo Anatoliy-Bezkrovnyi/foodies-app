@@ -284,20 +284,16 @@ components:
         avatar:
           type: string
           nullable: true
-        createdAt:
-          type: string
-          format: date-time
-        _count:
-          type: object
-          properties:
-            recipes:
-              type: integer
-            favorites:
-              type: integer
-            followers:
-              type: integer
-            following:
-              type: integer
+        recipesCount:
+          type: integer
+        favoritesCount:
+          type: integer
+        followersCount:
+          type: integer
+        followingCount:
+          type: integer
+        isFollowing:
+          type: boolean
 
   securitySchemes:
     bearerAuth:

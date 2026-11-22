@@ -43,15 +43,14 @@ export const getPublicUserProfile = async (
 };
 // GET /api/users/current
 // Returns the current user's profile with activity counters.
-export const getCurrentUserProfile = (userId: string) => {
-  return prisma.user.findUnique({
+export const getCurrentUserProfile = async (userId: string) => {
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       name: true,
       email: true,
       avatar: true,
-      createdAt: true,
       _count: {
         select: {
           recipes: true,
@@ -62,6 +61,20 @@ export const getCurrentUserProfile = (userId: string) => {
       },
     },
   });
+
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    recipesCount: user._count.recipes,
+    favoritesCount: user._count.favorites,
+    followersCount: user._count.followers,
+    followingCount: user._count.following,
+    isFollowing: false,
+  };
 };
 // GET /api/users/followers
 // Returns users who follow the current user.
