@@ -7,10 +7,12 @@ export interface UiState {
   // Which auth modal is open. Any component (e.g. a guest clicking a heart) can open one;
   // the modals themselves are rendered once at the app level.
   authModal: AuthModal | null;
+  logOutModal: boolean;
 }
 
 const initialState: UiState = {
   authModal: null,
+  logOutModal: false,
 };
 
 const uiSlice = createSlice({
@@ -23,6 +25,12 @@ const uiSlice = createSlice({
     closeAuthModal: (state) => {
       state.authModal = null;
     },
+    openLogOutModal: (state) => {
+      state.logOutModal = true;
+    },
+    closeLogOutModal: (state) => {
+      state.logOutModal = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(setCredentials, (state) => {
@@ -31,6 +39,6 @@ const uiSlice = createSlice({
   },
 });
 
-export const { openAuthModal, closeAuthModal } = uiSlice.actions;
+export const { openAuthModal, closeAuthModal, openLogOutModal, closeLogOutModal } = uiSlice.actions;
 
 export default uiSlice.reducer;

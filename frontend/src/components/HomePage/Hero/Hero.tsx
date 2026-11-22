@@ -1,8 +1,8 @@
-import fe05HeroSmall from '../../../assets/images/fe05/hero-small.png';
-import fe05HeroMain from '../../../assets/images/fe05/hero-main.png';
+import fe05HeroSmall from '../../../assets/images/fe05/hero-small.webp';
+import fe05HeroMain from '../../../assets/images/fe05/hero-main.webp';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { openAuthModal } from '../../../redux/ui/uiSlice';
+import { openAuthModal, openLogOutModal } from '../../../redux/ui/uiSlice';
 import css from './Hero.module.css';
 
 // Original raster assets exported from the Foodies Figma design.
@@ -30,10 +30,13 @@ export const Hero = () => {
         </nav>
         <div className={css.userActions}>
           {isAuthenticated ? (
-            <Link className={css.profileLink} to={`/user/${encodeURIComponent(user?.id || '')}`}>
-              {user?.avatar ? <img src={user.avatar} alt="" /> : <span aria-hidden="true">{(user?.name || 'U').slice(0, 1).toUpperCase()}</span>}
-              <span className={css.profileText}>{user?.name || 'Profile'}</span>
-            </Link>
+            <>
+              <Link className={css.profileLink} to={`/user/${encodeURIComponent(user?.id || '')}`}>
+                {user?.avatar ? <img src={user.avatar} alt="" /> : <span aria-hidden="true">{(user?.name || 'U').slice(0, 1).toUpperCase()}</span>}
+                <span className={css.profileText}>{user?.name || 'Profile'}</span>
+              </Link>
+              <button className={css.logoutAction} type="button" onClick={() => dispatch(openLogOutModal())}>Log out</button>
+            </>
           ) : (
             <>
               <button className={css.signIn} type="button" onClick={() => dispatch(openAuthModal('signIn'))}>Sign in</button>
@@ -48,8 +51,8 @@ export const Hero = () => {
         <button className={css.addButton} type="button" onClick={addRecipe}>Add recipe</button>
       </div>
       <div className={css.heroPhotos} aria-hidden="true">
-        <div className={css.photoSmall}><img src={heroSmall} alt="" loading="eager" /></div>
-        <div className={css.photoMain}><img src={heroMain} alt="" loading="eager" /></div>
+        <div className={css.photoSmall}><img src={heroSmall} alt="" loading="eager" decoding="async" /></div>
+        <div className={css.photoMain}><img src={heroMain} alt="" loading="eager" decoding="async" /></div>
       </div>
     </section>
   );

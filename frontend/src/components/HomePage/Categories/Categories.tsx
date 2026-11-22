@@ -1,17 +1,18 @@
-import fe05Starter from '../../../assets/images/fe05/starter.jpg';
-import fe05Side from '../../../assets/images/fe05/side.jpg';
-import fe05Seafood from '../../../assets/images/fe05/seafood.jpg';
-import fe05Pork from '../../../assets/images/fe05/pork.jpg';
-import fe05Pasta from '../../../assets/images/fe05/pasta.jpg';
-import fe05Miscellaneous from '../../../assets/images/fe05/miscellaneous.jpg';
-import fe05Goat from '../../../assets/images/fe05/goat.jpg';
-import fe05Lamb from '../../../assets/images/fe05/lamb.jpg';
-import fe05Desserts from '../../../assets/images/fe05/desserts.jpg';
-import fe05Breakfast from '../../../assets/images/fe05/breakfast.jpg';
-import fe05Beef from '../../../assets/images/fe05/beef.jpg';
-import { useEffect, useMemo, useState } from 'react';
+import fe05Starter from '../../../assets/images/fe05/starter.webp';
+import fe05Side from '../../../assets/images/fe05/side.webp';
+import fe05Seafood from '../../../assets/images/fe05/seafood.webp';
+import fe05Pork from '../../../assets/images/fe05/pork.webp';
+import fe05Pasta from '../../../assets/images/fe05/pasta.webp';
+import fe05Miscellaneous from '../../../assets/images/fe05/miscellaneous.webp';
+import fe05Goat from '../../../assets/images/fe05/goat.webp';
+import fe05Lamb from '../../../assets/images/fe05/lamb.webp';
+import fe05Desserts from '../../../assets/images/fe05/desserts.webp';
+import fe05Breakfast from '../../../assets/images/fe05/breakfast.webp';
+import fe05Beef from '../../../assets/images/fe05/beef.webp';
+import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import ArrowIcon from '../../../assets/icons/arrow-up-right.svg?react';
+import spriteUrl from '../../../assets/icons/sprite.svg?url';
+import { MainTitle, Subtitle } from '../../Common';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { fetchLookups } from '../../../redux/meta/operations';
 import { CATEGORY_PARAM } from '../Recipes';
@@ -36,7 +37,6 @@ const curated = [
 export const Categories = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector((state) => state.meta.categories);
-  const [expanded, setExpanded] = useState(false);
   const [, setSearchParams] = useSearchParams();
 
   useEffect(() => { void dispatch(fetchLookups()); }, [dispatch]);
@@ -86,10 +86,10 @@ export const Categories = () => {
   return (
     <section className={css.categories} aria-labelledby="categories-title">
       <div className={css.intro}>
-        <h2 id="categories-title">Categories</h2>
-        <p>Discover a limitless world of culinary possibilities and enjoy exquisite recipes that combine taste, style and the warm atmosphere of the kitchen.</p>
+        <MainTitle as="h2" id="categories-title">Categories</MainTitle>
+        <Subtitle>Discover a limitless world of culinary possibilities and enjoy exquisite recipes that combine taste, style and the warm atmosphere of the kitchen.</Subtitle>
       </div>
-      <div className={`${css.grid} ${expanded ? css.expanded : ''}`}>
+      <div className={css.grid}>
         {cards.map((item, index) => (
           <button
             key={item.name}
@@ -98,13 +98,13 @@ export const Categories = () => {
             onClick={() => choose(item.name)}
             aria-label={`Browse ${item.name} recipes`}
           >
-            <img src={item.image} alt="" loading="lazy" />
-            <span className={css.cardActions}><span className={css.name}>{item.name}</span><span className={css.arrow}><ArrowIcon aria-hidden="true" /></span></span>
+            <img src={item.image} alt="" loading="lazy" decoding="async" />
+            <span className={css.cardActions}><span className={css.name}>{item.name}</span><span className={css.arrow}><svg aria-hidden="true"><use href={`${spriteUrl}#arrow-up-right`} /></svg></span></span>
           </button>
         ))}
-        <button className={css.allCategories} type="button" onClick={() => setExpanded((v) => !v)} aria-expanded={expanded}>
-          {expanded ? 'Show fewer categories' : 'All categories'}
-          <ArrowIcon aria-hidden="true" />
+        <button className={css.allCategories} type="button" onClick={() => choose('')}>
+          All categories
+          <svg aria-hidden="true"><use href={`${spriteUrl}#arrow-up-right`} /></svg>
         </button>
       </div>
     </section>
