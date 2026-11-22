@@ -1,14 +1,15 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import createHttpError, { HttpError } from 'http-errors';
-import { swaggerDocs } from './middlewares/swaggerDocs.js';
-import categoriesRouter from './routes/categoriesRouter.js';
-import areasRouter from './routes/areasRouter.js';
-import ingredientsRouter from './routes/ingredientsRouter.js';
-import testimonialsRouter from './routes/testimonialsRouter.js';
-import authRouter from './routes/authRouter.js';
-import usersRouter from './routes/usersRouter.js';
 import multer from 'multer';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import areasRouter from './routes/areasRouter.js';
+import authRouter from './routes/authRouter.js';
+import categoriesRouter from './routes/categoriesRouter.js';
+import ingredientsRouter from './routes/ingredientsRouter.js';
+import recipesRouter from './routes/recipesRouter.js';
+import testimonialsRouter from './routes/testimonialsRouter.js';
+import usersRouter from './routes/usersRouter.js';
 
 export const createApp = (): Application => {
   const app = express();
@@ -28,6 +29,7 @@ export const createApp = (): Application => {
   // Public lookup endpoints
   app.use('/api/categories', categoriesRouter);
   app.use('/api/areas', areasRouter);
+  app.use('/api/recipes', recipesRouter);
   app.use('/api/ingredients', ingredientsRouter);
   app.use('/api/testimonials', testimonialsRouter);
   app.use('/api/users', usersRouter);
