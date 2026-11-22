@@ -1,15 +1,15 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import createHttpError, { HttpError } from 'http-errors';
-import { swaggerDocs } from './middlewares/swaggerDocs.js';
-import categoriesRouter from './routes/categoriesRouter.js';
-import areasRouter from './routes/areasRouter.js';
-import ingredientsRouter from './routes/ingredientsRouter.js';
-import testimonialsRouter from './routes/testimonialsRouter.js';
-import authRouter from './routes/authRouter.js';
-import recipesRouter from './routes/recipesRouter.js';
-import usersRouter from './routes/usersRouter.js';
 import multer from 'multer';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import areasRouter from './routes/areasRouter.js';
+import authRouter from './routes/authRouter.js';
+import categoriesRouter from './routes/categoriesRouter.js';
+import ingredientsRouter from './routes/ingredientsRouter.js';
+import recipesRouter from './routes/recipesRouter.js';
+import testimonialsRouter from './routes/testimonialsRouter.js';
+import usersRouter from './routes/usersRouter.js';
 
 export const createApp = (): Application => {
   const app = express();
