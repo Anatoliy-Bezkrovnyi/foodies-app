@@ -1,4 +1,4 @@
-import { prisma } from '../db/prisma.js';
+﻿import { prisma } from '../db/prisma.js';
 import createHttpError from 'http-errors';
 import { Prisma } from '@prisma/client';
 import cloudinary from '../utils/cloudinary.js';
@@ -77,44 +77,123 @@ export const getCurrentUserProfile = async (userId: string) => {
   };
 };
 // GET /api/users/followers
-// Returns users who follow the current user.
-export const getUserFollowers = (userId: string) => {
-  return prisma.follower.findMany({
-    where: { followingId: userId },
-    select: {
-      follower: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
+// Returns paginated users who follow the current user.
+export const getUserFollowers = async (
+  userId: string,
+  page: number,
+  limit: number,
+) => {
+  const where = { followingId: userId };
+  const skip = (page - 1) * limit;
+
+  const [followers, total] = await Promise.all([
+    prisma.follower.findMany({
+      where,
+      skip,
+      take: limit,
+      select: {
+        follower: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            _count: {
+              select: { recipes: true },
+            },
+            recipes: {
+              take: 4,
+              orderBy: { createdAt: 'desc' },
+              select: {
+                id: true,
+                title: true,
+                thumb: true,
+              },
+            },
+            followers: {
+              where: { followerId: userId },
+              select: { id: true },
+            },
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.follower.count({ where }),
+  ]);
+
+  return {
+    items: followers.map(({ follower }) => ({
+      id: follower.id,
+      name: follower.name,
+      avatar: follower.avatar,
+      recipesCount: follower._count.recipes,
+      recipes: follower.recipes,
+      isFollowing: follower.followers.length > 0,
+    })),
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 // GET /api/users/following
-// Returns users followed by the current user.
-export const getUserFollowing = (userId: string) => {
-  return prisma.follower.findMany({
-    where: { followerId: userId },
-    select: {
-      following: {
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
+// Returns paginated users followed by the current user.
+export const getUserFollowing = async (
+  userId: string,
+  page: number,
+  limit: number,
+) => {
+  const where = { followerId: userId };
+  const skip = (page - 1) * limit;
+
+  const [following, total] = await Promise.all([
+    prisma.follower.findMany({
+      where,
+      skip,
+      take: limit,
+      select: {
+        following: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            _count: {
+              select: { recipes: true },
+            },
+            recipes: {
+              take: 4,
+              orderBy: { createdAt: 'desc' },
+              select: {
+                id: true,
+                title: true,
+                thumb: true,
+              },
+            },
+          },
         },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.follower.count({ where }),
+  ]);
+
+  return {
+    items: following.map(({ following: user }) => ({
+      id: user.id,
+      name: user.name,
+      avatar: user.avatar,
+      recipesCount: user._count.recipes,
+      recipes: user.recipes,
+      isFollowing: true,
+    })),
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  };
 };
+
 // POST /api/users/:id/follow
 // Creates a subscription to another user.
 export const followUser = async (followerId: string, followingId: string) => {
