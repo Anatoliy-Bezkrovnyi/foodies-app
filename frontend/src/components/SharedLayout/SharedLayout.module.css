@@ -1,0 +1,36 @@
+/* Забезпечуємо висоту на весь екран та Flex-розподіл */
+.layoutWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  transition:
+    background-color var(--transition-duration) var(--transition-timing-function),
+    color var(--transition-duration) var(--transition-timing-function);
+}
+
+.layoutWrapper.dark {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.mainContent {
+  flex: 1 0 auto;
+}
+
+/* Контент розширюється, штовхаючи футер до низу */
+.mainContent {
+  flex-grow: 1;
+}
+
+/* Простий стиль для лоадера під час ледачого завантаження сторінок */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #050505;
+}

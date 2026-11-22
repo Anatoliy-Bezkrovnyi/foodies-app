@@ -1,0 +1,21 @@
+.logo {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  color: var(--color-primary);
+  transition: color var(--transition-duration) var(--transition-timing-function);
+}
+
+.logo.dark {
+  color: var(--color-white);
+}
+
+@media screen and (min-width: 768px) {
+  .logo {
+    font-size: 24px;
+    line-height: 1.17;
+  }
+}

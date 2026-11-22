@@ -1,0 +1,105 @@
+/* src/components/Footer/Footer.module.css */
+.footerWrapper {
+  width: 100%;
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border-top: 1px solid rgba(5, 5, 5, 0.1);
+  transition:
+    background-color var(--transition-duration) var(--transition-timing-function),
+    color var(--transition-duration) var(--transition-timing-function);
+}
+
+.footerWrapper.dark {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.footer {
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.socialList {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(5, 5, 5, 0.15);
+  color: var(--color-primary);
+  transition:
+    background-color var(--transition-duration) var(--transition-timing-function),
+    color var(--transition-duration) var(--transition-timing-function),
+    border-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.socialList.dark .socialLink {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-white);
+}
+
+.socialLink:hover,
+.socialLink:focus-visible {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.socialList.dark .socialLink:hover,
+.socialList.dark .socialLink:focus-visible {
+  background-color: var(--color-white);
+  border-color: var(--color-white);
+  color: var(--color-primary);
+}
+
+.socialIcon {
+  fill: currentColor;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: rgba(5, 5, 5, 0.6);
+}
+
+.footerWrapper.dark .copyright {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media screen and (min-width: 768px) {
+  .footer {
+    padding-top: 64px;
+    padding-bottom: 24px;
+  }
+
+  .socialList {
+    gap: 16px;
+  }
+
+  .socialLink {
+    width: 40px;
+    height: 40px;
+  }
+
+  .copyright {
+    font-size: 14px;
+  }
+}

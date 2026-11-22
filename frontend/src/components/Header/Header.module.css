@@ -1,0 +1,253 @@
+.header {
+  width: 100%;
+  padding: 16px 0;
+  position: relative;
+  z-index: 100;
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  transition:
+    background-color var(--transition-duration) var(--transition-timing-function),
+    color var(--transition-duration) var(--transition-timing-function);
+}
+
+.header.light {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+}
+
+.header.dark {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+@media (prefers-color-scheme: dark) {
+  .header:not(.light) {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nav.desktopNav {
+  display: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 30px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  transition:
+    border-color var(--transition-duration) var(--transition-timing-function),
+    opacity var(--transition-duration) var(--transition-timing-function);
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  opacity: 0.75;
+}
+
+.header.light .activeNavLink {
+  border-color: var(--color-secondary);
+}
+
+.header.dark .activeNavLink {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Капсула профілю */
+.userMenuWrapper {
+  position: relative;
+}
+
+.userBarBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px 0 0;
+  border-radius: 30px;
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+  transition: background-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.chevron {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Випадаюче меню з підтримкою світлої та темної теми */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 148px;
+  padding: 16px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+}
+
+.dropdown:not(.dark) {
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid rgba(5, 5, 5, 0.15);
+  box-shadow: 0 8px 24px rgba(5, 5, 5, 0.08);
+}
+
+.dropdown.dark {
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: inherit;
+  transition: opacity var(--transition-duration) var(--transition-timing-function);
+}
+
+.dropdownItem:hover,
+.dropdownItem:focus-visible {
+  opacity: 0.7;
+}
+
+.dropdownItem svg {
+  fill: currentColor;
+}
+
+/* Авторизація */
+.authBar {
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
+  padding: 2px;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+}
+
+.signInBtn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.signUpBtn {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: var(--font-weight-bold);
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+}
+
+/* Бургер і мобільне меню */
+.burgerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: inherit;
+}
+
+.burgerBtn svg {
+  stroke: currentColor;
+  fill: none;
+}
+
+.mobileMenu {
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid rgba(5, 5, 5, 0.1);
+}
+
+.mobileMenu.dark {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav.mobileNav {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 12px;
+}
+
+/* Від 375px і вище показуємо навігацію і ховаємо бургер-меню */
+@media screen and (min-width: 375px) {
+  .nav.desktopNav {
+    display: flex;
+  }
+
+  .burgerBtn,
+  .mobileMenu {
+    display: none;
+  }
+}
+
+/* Окремо залишаємо брейкпоінт 768px для планшетних розмірів */
+@media screen and (min-width: 768px) {
+  .header {
+    padding: 20px 0;
+  }
+
+  .userBarBtn {
+    height: 50px;
+    padding: 0 14px 0 0;
+  }
+
+  .avatar {
+    width: 50px;
+    height: 50px;
+  }
+}
