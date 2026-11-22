@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from 'express';
+﻿import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import {
   getPublicUserProfile,
@@ -62,9 +62,21 @@ export const getFollowers = async (
       throw createHttpError(401, 'Unauthorized');
     }
 
-    const followers = await getUserFollowers(userId);
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? req.query.perPage ?? 6);
 
-    res.status(200).json(followers.map((item) => item.follower));
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      !Number.isInteger(limit) ||
+      limit < 1
+    ) {
+      throw createHttpError(400, 'Invalid pagination parameters');
+    }
+
+    const followers = await getUserFollowers(userId, page, limit);
+
+    res.status(200).json(followers);
   } catch (error) {
     next(error);
   }
@@ -83,13 +95,26 @@ export const getFollowing = async (
       throw createHttpError(401, 'Unauthorized');
     }
 
-    const following = await getUserFollowing(userId);
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? req.query.perPage ?? 6);
 
-    res.status(200).json(following.map((item) => item.following));
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      !Number.isInteger(limit) ||
+      limit < 1
+    ) {
+      throw createHttpError(400, 'Invalid pagination parameters');
+    }
+
+    const following = await getUserFollowing(userId, page, limit);
+
+    res.status(200).json(following);
   } catch (error) {
     next(error);
   }
 };
+
 // POST /api/users/:id/follow
 export const followUserController = async (
   req: Request,
