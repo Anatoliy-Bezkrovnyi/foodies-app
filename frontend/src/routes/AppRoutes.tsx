@@ -15,7 +15,6 @@ export const AppRoutes: React.FC = () => {
           <Route index element={<HomePage />} />
           <Route path="recipe/:id" element={<RecipePage />} />
           <Route path="add" element={<AddRecipePage />} />
-          <Route path="user" element={<UserPage />} />
           <Route path="user/:id" element={<UserPage />} />
           <Route path="*" element={<div>Сторінку не знайдено (404)</div>} />
           {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
