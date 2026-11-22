@@ -12,7 +12,13 @@ import {
 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await getPublicUserProfile(req.params.id);
+    const currentUserId = req.user?.id;
+
+    if (!currentUserId) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const user = await getPublicUserProfile(req.params.id, currentUserId);
 
     if (!user) {
       throw createHttpError(404, 'User not found');
