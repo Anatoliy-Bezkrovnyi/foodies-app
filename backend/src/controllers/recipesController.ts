@@ -2,6 +2,9 @@ import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import { getRecipes, getPopularRecipes, getRecipeById } from '../services/recipesService.js';
 
+const DEFAULT_POPULAR_LIMIT = 4;
+const MAX_POPULAR_LIMIT = 20;
+
 // GET /api/recipes
 export const getRecipesController = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -31,12 +34,18 @@ export const getRecipesController = async (req: Request, res: Response, next: Ne
 
 // GET /api/recipes/popular
 export const getPopularRecipesController = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const recipes = await getPopularRecipes();
+    const parsedLimit = Number(req.query.limit);
+    const limit =
+      Number.isFinite(parsedLimit) && parsedLimit >= 1
+        ? Math.min(MAX_POPULAR_LIMIT, Math.trunc(parsedLimit))
+        : DEFAULT_POPULAR_LIMIT;
+
+    const recipes = await getPopularRecipes(limit);
     res.status(200).json(recipes);
   } catch (error) {
     next(error);
