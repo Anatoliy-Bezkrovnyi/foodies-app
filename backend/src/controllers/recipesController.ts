@@ -7,6 +7,9 @@ import {
   getPopularRecipes,
   getRecipeById,
   getRecipes,
+  addRecipeToFavorites,
+  getFavoriteRecipes,
+  removeRecipeFromFavorites,
 } from '../services/recipesService.js';
 import type { CreateRecipeInput } from '../validation/recipeSchemas.js';
 
@@ -122,6 +125,69 @@ export const deleteRecipeController = async (req: Request, res: Response, next: 
     }
 
     const result = await deleteOwnRecipe(userId, req.params.id);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET /api/recipes/favorite (та /api/recipes/favorites)
+export const getFavoriteRecipesController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const perPage = Math.min(50, Math.max(1, Number(req.query.perPage ?? req.query.limit) || 9));
+
+    const result = await getFavoriteRecipes({ userId, page, perPage });
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /api/recipes/:id/favorite
+export const addFavoriteRecipeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const favorite = await addRecipeToFavorites(userId, req.params.id);
+    res.status(201).json(favorite);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// DELETE /api/recipes/:id/favorite
+export const removeFavoriteRecipeController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw createHttpError(401, 'Unauthorized');
+    }
+
+    const result = await removeRecipeFromFavorites(userId, req.params.id);
     res.status(200).json(result);
   } catch (error) {
     next(error);
