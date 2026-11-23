@@ -5,18 +5,12 @@
   min-height: 100vh;
   background-color: var(--color-background);
   color: var(--color-primary);
-  transition:
-    background-color var(--transition-duration) var(--transition-timing-function),
-    color var(--transition-duration) var(--transition-timing-function);
-}
-
-.layoutWrapper.dark {
-  background-color: var(--color-primary);
-  color: var(--color-white);
 }
 
 .mainContent {
   flex: 1 0 auto;
+  background-color: var(--color-background);
+  color: var(--color-primary);
 }
 
 /* Контент розширюється, штовхаючи футер до низу */
