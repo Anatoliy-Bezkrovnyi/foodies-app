@@ -1,8 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import fe05HeroMain from '../../assets/images/hero-main.webp';
 import fe05HeroSmall from '../../assets/images/hero-small.webp';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { openAuthModal, openLogOutModal } from '../../redux/ui/uiSlice';
+import { openAuthModal } from '../../redux/ui/uiSlice';
 import css from './Hero.module.css';
 
 // Original raster assets exported from the Foodies Figma design.
@@ -12,7 +12,6 @@ const heroSmall = fe05HeroSmall;
 export const Hero = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuth);
-  const user = useAppSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const addRecipe = () => {
@@ -22,57 +21,6 @@ export const Hero = () => {
 
   return (
     <section className={css.hero} aria-labelledby="hero-title">
-      <header className={css.header}>
-        <Link className={css.logo} to="/" aria-label="Foodies home">
-          foodies
-        </Link>
-        <nav className={css.nav} aria-label="Main navigation">
-          <Link to="/" aria-current="page">
-            Home
-          </Link>
-          <button type="button" onClick={addRecipe}>
-            Add recipe
-          </button>
-        </nav>
-        <div className={css.userActions}>
-          {isAuthenticated ? (
-            <>
-              <Link className={css.profileLink} to={`/user/${encodeURIComponent(user?.id || '')}`}>
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="" />
-                ) : (
-                  <span aria-hidden="true">{(user?.name || 'U').slice(0, 1).toUpperCase()}</span>
-                )}
-                <span className={css.profileText}>{user?.name || 'Profile'}</span>
-              </Link>
-              <button
-                className={css.logoutAction}
-                type="button"
-                onClick={() => dispatch(openLogOutModal())}
-              >
-                Log out
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                className={css.signIn}
-                type="button"
-                onClick={() => dispatch(openAuthModal('signIn'))}
-              >
-                Sign in
-              </button>
-              <button
-                className={css.signUp}
-                type="button"
-                onClick={() => dispatch(openAuthModal('signUp'))}
-              >
-                Sign up
-              </button>
-            </>
-          )}
-        </div>
-      </header>
       <div className={css.copy}>
         <h1 id="hero-title">
           Improve your
