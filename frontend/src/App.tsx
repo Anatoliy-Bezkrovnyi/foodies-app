@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { closeLogOutModal } from './redux/ui/uiSlice';
+import { Route, Routes } from 'react-router-dom';
 import AuthModalHost from './components/Modals/AuthModalHost';
 import LogOutModal from './components/Modals/LogOutModal';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { closeLogOutModal } from './redux/ui/uiSlice';
 
 const HomePage = React.lazy(() => import('./pages/HomePage/HomePage'));
 const RecipePage = React.lazy(() => import('./pages/RecipePage/RecipePage'));
